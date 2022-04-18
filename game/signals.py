@@ -2,7 +2,8 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from game.models import *
 import json
-from channels import Group
+from asgiref.sync import async_to_sync
+import channels.asgi
 from django.dispatch import receiver
 from django.db.models.signals import post_save, post_delete
 
@@ -23,4 +24,4 @@ def new_game_handler(**kwargs):
         # we pass "text" as the key and then serialize the list of open games
         avail_game_list = Game.get_available_games()
         avail_serializer = GameSerializer(avail_game_list, many=True)
-        Group('lobby').send({'text': json.dumps(avail_serializer.data)})
+        async_to_sync(channels.asgi.get_channel_layer().group_send)({'text': json.dumps(avail_serializer.data)})

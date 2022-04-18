@@ -1,7 +1,8 @@
 from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from django.db import models
-from channels import Group
+from asgiref.sync import async_to_sync
+import channels.asgi
 import json
 from datetime import datetime
 
@@ -132,7 +133,7 @@ class Game(models.Model):
                    'squares': square_serializer.data}
 
         game_group = 'game-{0}'.format(self.id)
-        Group(game_group).send({'text': json.dumps(message)})
+        async_to_sync(channels.asgi.get_channel_layer().group_send)({'text': json.dumps(message)})
 
     def next_player_turn(self):
         """

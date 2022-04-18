@@ -1,6 +1,5 @@
 import re
 import logging
-from channels import Group
 from channels.sessions import channel_session
 from .models import Game, GameSquare
 from channels.auth import http_session_user, channel_session_user, channel_session_user_from_http
